@@ -1,0 +1,5 @@
+*.p
+*.pyc
+*.swp
+node_modules
+data/

@@ -1,0 +1,61 @@
+multiprocessing.pool.RemoteTraceback: 
+"""
+Traceback (most recent call last):
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 125, in worker
+    result = (True, func(*args, **kwds))
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 48, in mapstar
+    return list(map(*args))
+  File "/home/shu/master-research/src/fuzz/fuzz.py", line 409, in run
+    fuzzer.fuzz()
+  File "/home/shu/master-research/src/fuzz/fuzz.py", line 200, in fuzz
+    js_path = self.gen_code(printer, model)
+  File "/home/shu/master-research/src/fuzz/fuzz.py", line 209, in gen_code
+    root, model_input) = self.prepare_seed(model)
+  File "/home/shu/master-research/src/fuzz/fuzz.py", line 284, in prepare_seed
+    frag_type) = self.build_seed_tree(seed_name, frag_seq)
+  File "/home/shu/master-research/src/fuzz/fuzz.py", line 139, in build_seed_tree
+    root, _ = self.build_subtree(frags, stack)
+  File "/home/shu/master-research/src/fuzz/fuzz.py", line 150, in build_subtree
+    self.traverse(root, frag_seq, stack)
+  File "/home/shu/master-research/src/fuzz/fuzz.py", line 378, in traverse
+    self.traverse(child[idx], frag_seq, stack)
+  File "/home/shu/master-research/src/fuzz/fuzz.py", line 378, in traverse
+    self.traverse(child[idx], frag_seq, stack)
+  File "/home/shu/master-research/src/fuzz/fuzz.py", line 362, in traverse
+    self.traverse(node[key], frag_seq, stack)
+  File "/home/shu/master-research/src/fuzz/fuzz.py", line 362, in traverse
+    self.traverse(node[key], frag_seq, stack)
+  File "/home/shu/master-research/src/fuzz/fuzz.py", line 362, in traverse
+    self.traverse(node[key], frag_seq, stack)
+  [Previous line repeated 973 more times]
+  File "/home/shu/master-research/src/fuzz/fuzz.py", line 342, in traverse
+    parent_idx = self.frag2idx(node)
+  File "/home/shu/master-research/src/fuzz/fuzz.py", line 188, in frag2idx
+    hash_val = hash_frag(frag)
+  File "/home/shu/master-research/src/utils/__init__.py", line 31, in hash_frag
+    return hash_val(stringify_frag(frag))
+  File "/home/shu/master-research/src/utils/__init__.py", line 133, in stringify_frag
+    str_val += stringify_frag(child)
+  File "/home/shu/master-research/src/utils/__init__.py", line 146, in stringify_frag
+    str_val += str((key, node[key]))
+RecursionError: maximum recursion depth exceeded while getting the repr of an object
+"""
+
+The above exception was the direct cause of the following exception:
+
+Traceback (most recent call last):
+  File "main.py", line 62, in <module>
+    main()
+  File "main.py", line 57, in main
+    exec_fuzz(conf)
+  File "main.py", line 20, in exec_fuzz
+    fuzz(conf)
+  File "/home/shu/master-research/src/fuzz/fuzz.py", line 383, in fuzz
+    pool_map(p, run, range(conf.num_proc), conf=conf)
+  File "/home/shu/master-research/src/utils/__init__.py", line 97, in pool_map
+    return pool.map(func, list)
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 364, in map
+    return self._map_async(func, iterable, mapstar, chunksize).get()
+  File "/usr/lib/python3.8/multiprocessing/pool.py", line 771, in get
+    raise self._value
+RecursionError: maximum recursion depth exceeded while getting the repr of an object

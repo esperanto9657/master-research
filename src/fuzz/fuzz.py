@@ -12,6 +12,7 @@ import torch
 from torch.multiprocessing import Pool
 from torch.multiprocessing import set_start_method
 
+from preprocess import fragmentize
 from fuzz.resolve import hoisting
 from fuzz.resolve import resolve_id
 from fuzz.resolve import update_builtins
@@ -37,6 +38,7 @@ from utils.print import CodePrinter
 class Fuzzer:
   def __init__(self, proc_idx, conf):
     self._eng_path = conf.eng_path
+    self._eng_name = conf.eng_name
     self._max_ins = conf.max_ins
     self._num_gpu = conf.num_gpu
     self._model_path = conf.model_path
@@ -44,6 +46,7 @@ class Fuzzer:
     self._seed_dir = conf.seed_dir
     self._bug_dir = os.path.join(conf.bug_dir,
                                  'proc.%d' % proc_idx)
+    self._cov_dir = conf.cov_dir
     self._timeout = conf.timeout
     self._top_k = conf.top_k
 
@@ -57,7 +60,8 @@ class Fuzzer:
     seed, data = load_data(conf)
     (self._seed_dict,
      self._frag_list,
-     self._new_seed_dict) = seed
+     self._new_seed_dict,
+     self._frag_dict) = seed
     (self._new_frag_list,
      self._new_frag_dict,
      self._oov_pool,
@@ -65,8 +69,9 @@ class Fuzzer:
     
     self._seed_list = [[0, seed] for seed in self._seed_dict.keys()]
     heapq.heapify(self._seed_list)
-    self._initial_mutation_count = 10
+    self._initial_mutation_count = 100
     self._current_mutation_count = 0
+    self._cov_set = set()
 
     self.assign_gpu(proc_idx)
     update_builtins(conf.eng_path)
@@ -150,7 +155,7 @@ class Fuzzer:
     self.traverse(root, frag_seq, stack)
     return root, frag_seq
 
-  def exec_eng(self, js_path):
+  def exec_eng(self, js_path, root, original_seed_name):
     cmd = [self._eng_path] + self._opt + [js_path]
     proc = Popen(cmd, cwd = self._seed_dir,
                  stdout = PIPE, stderr = PIPE)
@@ -158,6 +163,7 @@ class Fuzzer:
     timer.start()
     stdout, stderr = proc.communicate()
     timer.cancel()
+    print("returncode:" + str(proc.returncode))
     if proc.returncode in [-4, -11]:
       log = [self._eng_path] + self._opt
       log += [js_path, str(proc.returncode)]
@@ -167,6 +173,22 @@ class Fuzzer:
       print_msg(msg, 'INFO')
     else:
       os.remove(js_path)
+      cmd_sancov = ['sancov', '-print', os.path.join(self._cov_dir, self._eng_name + '.' + str(proc.pid) + '.sancov')]
+      proc_sancov = Popen(cmd_sancov, cwd = self._cov_dir,
+                  stdout = PIPE, stderr = PIPE)
+      cov_list = proc_sancov.communicate()[0].decode("utf-8").strip().split()
+      score = len(set(cov_list) - self._cov_set)
+      self._cov_set |= set(cov_list)
+      print(score)
+      new_seed_name = os.path.basename(js_path)
+      heapq.heappush(self._seed_list, [-score, new_seed_name])
+      frag_seq, frag_info_seq, node_type, stack = [], [], set(), []
+      fragmentize.make_frags(root, frag_seq, frag_info_seq, node_type, stack)
+      frag_seq = self.frag_seq2idx(frag_seq)
+      self._seed_dict[new_seed_name] = (frag_seq, frag_info_seq)
+      new_frag_seq = self.replace_oov_frag_seq(frag_seq)
+      self._new_seed_dict[new_seed_name] = (new_frag_seq, {})
+      self._harness._harness_dict[new_seed_name] = self._harness.get_list(original_seed_name)
 
   def expand_ast(self, frag, stack, root):
     # Out-of-vocabulary
@@ -190,6 +212,16 @@ class Fuzzer:
       return self._new_frag_dict[hash_val]
     else:
       return self._new_frag_dict[node_type]
+  
+  def frag_seq2idx(self, frag_seq):
+    frag_seq_idx = []
+    for frag in frag_seq:
+      hash_val = hash_frag(frag)
+      if hash_val in self._frag_dict:
+        frag_seq_idx.append(self._frag_dict[hash_val])
+      else:
+        frag_seq_idx.append(self._frag_list.index(frag))
+    return frag_seq_idx
 
   def fuzz(self):
     model = load_model(self._model_path)
@@ -197,10 +229,10 @@ class Fuzzer:
     printer = CodePrinter(self._bug_dir)
 
     while True:
-      js_path = self.gen_code(printer, model)
+      js_path, root, original_seed_name = self.gen_code(printer, model)
       if js_path == None: continue
       js_path = os.path.abspath(js_path)
-      self.exec_eng(js_path)
+      self.exec_eng(js_path, root, original_seed_name)
 
   def gen_code(self, printer, model):
     stack = []
@@ -212,7 +244,7 @@ class Fuzzer:
     while parent_idx != None:
       # Check max insertion condition
       if ins_cnt >= self._max_ins:
-        return None
+        return None, None, ""
       else:
         ins_cnt += 1
 
@@ -236,14 +268,14 @@ class Fuzzer:
       if not found:
         msg = 'Failed to select valid frag at %d' % ins_cnt
         print_msg(msg, 'WARN')
-        return None
+        return None, None, ""
 
     harness_list = self._harness.get_list(seed_name)
     self.resolve_errors(root, harness_list)
 
-    root = self.postprocess(root, harness_list)
-    js_path = printer.ast2code(root)
-    return js_path
+    new_root = self.postprocess(root, harness_list)
+    js_path = printer.ast2code(new_root)
+    return js_path, root, seed_name
 
   def idx2frag(self, frag_idx):
     frag = self._frag_list[frag_idx]
@@ -257,6 +289,13 @@ class Fuzzer:
     frag_type = data2tensor(frag_type,
                             tensor_type="Float")
     return parent_idx, frag_type
+
+  def is_oov(self, frag):
+    frag_type = get_node_type(frag)
+    if frag_type in self._oov_pool:
+      return frag in self._oov_pool[frag_type] # Maybe use hash_frag to compare and judge
+    else:
+      return False
 
   def postprocess(self, root, harness_list):
     # Insert Load
@@ -309,6 +348,17 @@ class Fuzzer:
             info = (parent_idx, get_node_type(_child))
             stack.append(info)
 
+  def replace_oov_frag_seq(self, frag_seq):
+    new_frag_seq = []
+    for frag_idx in frag_seq:
+      frag = self.idx2frag(frag_idx)
+      if self.is_oov(frag):
+        frag_idx = self._new_frag_dict[get_node_type(frag)]
+      else:
+        frag_idx = self._new_frag_dict[hash_frag(frag)]
+      new_frag_seq += [frag_idx]
+    return new_frag_seq
+
   def resolve_errors(self, root, harness_list):
     try:
       # ID Resolve
@@ -325,13 +375,14 @@ class Fuzzer:
     
     while frag_len < 3:
       if self._current_mutation_count < self._initial_mutation_count:
-        seed_name = random.choice(self._seed_list)[1]
+        seed_score, seed_name = random.choice(self._seed_list)
         frag_seq, _ = self._seed_dict[seed_name]
         frag_len = len(frag_seq)
       else:
-        seed_name = heapq.heappop(self._seed_list)[1]
+        seed_score, seed_name = heapq.heappop(self._seed_list)
         frag_seq, _ = self._seed_dict[seed_name]
         frag_len = len(frag_seq)
+    print(seed_score, seed_name)
 
     self._current_mutation_count += 1
     return seed_name, frag_seq
@@ -381,6 +432,7 @@ def fuzz(conf):
   set_start_method('spawn')
   p = Pool(conf.num_proc, init_worker)
   pool_map(p, run, range(conf.num_proc), conf=conf)
+  #run(0, conf)
 
 def is_pruned(node):
   keys = node.keys()

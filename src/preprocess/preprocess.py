@@ -89,7 +89,7 @@ class Preprocessor:
 
     # Write a seed file
     seed = (self._seed_dict, self._frag_list,
-            self._new_seed_dict)
+            self._new_seed_dict, self._frag_dict)
     store_pickle(seed_data_path, seed)
 
     # Write a train data file

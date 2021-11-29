@@ -55,7 +55,8 @@ class Fuzzer:
     seed, data = load_data(conf)
     (self._seed_dict,
      self._frag_list,
-     self._new_seed_dict) = seed
+     self._new_seed_dict,
+     _) = seed
     (self._new_frag_list,
      self._new_frag_dict,
      self._oov_pool,

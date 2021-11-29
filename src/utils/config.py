@@ -2,12 +2,13 @@ import json
 import os
 
 from utils import read
+from datetime import datetime
 
 class Config:
   def __init__(self, conf_path):
     conf = self.load_conf(conf_path)
     self.batch_size = conf['model']['batch_size']
-    self.bug_dir = conf['bug_dir']
+    self.bug_dir = conf['bug_dir'] + "_" + datetime.now().strftime("%Y%m%d%H%M%S")
     self.data_dir = conf['data_dir']
     self.emb_size = conf['model']['emb_size']
     self.eng_name = conf['eng_name']

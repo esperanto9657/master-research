@@ -1,12 +1,12 @@
 {
-  "bug_dir": "/home/spqr/Montage/bugs/",
-  "data_dir": "/home/spqr/Montage/data",
-  "eng_name": "chakra",
-  "eng_path": "/mnt/d/Research/ChakraCore/out/Release/ch",
+  "bug_dir": "/home/shu/master-research/bugs/",
+  "data_dir": "/home/shu/master-research/data",
+  "eng_name": "v8",
+  "eng_path": "/home/shu/v8/v8/out/9.0.257.23/d8",
   "max_ins": 100,
-  "model_path": "/home/spqr/Montage/data/models/epoch-70.model",
+  "model_path": "/home/shu/master-research/data/models/epoch-70.model",
   "model": {
-    "batch_size": 64,
+    "batch_size": 256,
     "emb_size": 32,
     "epoch": 70,
     "gamma": 0.9,
@@ -18,7 +18,7 @@
   "num_gpu": 1,
   "num_proc": 12,
   "opt": [],
-  "seed_dir": "/home/spqr/js-test-suite/testsuite",
+  "seed_dir": "/home/shu/js-test-suite/testsuite",
   "timeout": 20,
   "top_k": 64
 }

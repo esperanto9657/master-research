@@ -9,7 +9,7 @@ from subprocess import Popen
 from subprocess import PIPE
 
 import torch
-from torch.multiprocessing import Pool
+from torch.multiprocessing import Pool, Value
 from torch.multiprocessing import set_start_method
 
 from preprocess import fragmentize
@@ -34,6 +34,10 @@ from utils.node import TERM_TYPE
 from utils.node import get_define_node
 from utils.node import get_load_node
 from utils.print import CodePrinter
+
+import signal
+from datetime import datetime
+from functools import partial
 
 class Fuzzer:
   def __init__(self, proc_idx, conf):
@@ -163,7 +167,7 @@ class Fuzzer:
     timer.start()
     stdout, stderr = proc.communicate()
     timer.cancel()
-    print("returncode:" + str(proc.returncode))
+    #print("returncode:" + str(proc.returncode))
     if proc.returncode in [-4, -11]:
       log = [self._eng_path] + self._opt
       log += [js_path, str(proc.returncode)]
@@ -171,15 +175,22 @@ class Fuzzer:
       self._crash_log.write(log)
       msg = 'Found a bug (%s)' % js_path
       print_msg(msg, 'INFO')
+      with pass_exec_count_shared.get_lock():
+        pass_exec_count_shared.value += 1
+    elif proc.returncode == 1:
+      os.remove(js_path)
+      cov_path = os.path.join(self._cov_dir, self._eng_name + '.' + str(proc.pid) + '.sancov')
+      if os.path.exists(cov_path):
+        os.remove(cov_path)
     else:
       os.remove(js_path)
-      cmd_sancov = ['sancov', '-print', os.path.join(self._cov_dir, self._eng_name + '.' + str(proc.pid) + '.sancov')]
+      cov_path = os.path.join(self._cov_dir, self._eng_name + '.' + str(proc.pid) + '.sancov')
+      cmd_sancov = ['sancov', '-print', cov_path]
       proc_sancov = Popen(cmd_sancov, cwd = self._cov_dir,
                   stdout = PIPE, stderr = PIPE)
       cov_list = proc_sancov.communicate()[0].decode("utf-8").strip().split()
       score = len(set(cov_list) - self._cov_set)
       self._cov_set |= set(cov_list)
-      print(score)
       new_seed_name = os.path.basename(js_path)
       heapq.heappush(self._seed_list, [-score, new_seed_name])
       frag_seq, frag_info_seq, node_type, stack = [], [], set(), []
@@ -189,6 +200,12 @@ class Fuzzer:
       new_frag_seq = self.replace_oov_frag_seq(frag_seq)
       self._new_seed_dict[new_seed_name] = (new_frag_seq, {})
       self._harness._harness_dict[new_seed_name] = self._harness.get_list(original_seed_name)
+      if os.path.exists(cov_path):
+        os.remove(cov_path)
+      with pass_exec_count_shared.get_lock():
+        pass_exec_count_shared.value += 1
+    with total_exec_count_shared.get_lock():
+      total_exec_count_shared.value += 1
 
   def expand_ast(self, frag, stack, root):
     # Out-of-vocabulary
@@ -382,7 +399,7 @@ class Fuzzer:
         seed_score, seed_name = heapq.heappop(self._seed_list)
         frag_seq, _ = self._seed_dict[seed_name]
         frag_len = len(frag_seq)
-    print(seed_score, seed_name)
+    #print(seed_score, seed_name)
 
     self._current_mutation_count += 1
     return seed_name, frag_seq
@@ -428,11 +445,36 @@ class Fuzzer:
             child[idx] = frag
           self.traverse(child[idx], frag_seq, stack)
 
+pass_exec_count_shared, total_exec_count_shared = None, None
+
 def fuzz(conf):
+  global pass_exec_count_shared, total_exec_count_shared
   set_start_method('spawn')
-  p = Pool(conf.num_proc, init_worker)
-  pool_map(p, run, range(conf.num_proc), conf=conf)
+  #p = Pool(conf.num_proc, init_worker, initargs=(pass_exec_count, total_exec_count,))
+  pass_exec_count_shared = Value("i", 0)
+  total_exec_count_shared = Value("i", 0)
+  p = Pool(conf.num_proc, init, initargs=(pass_exec_count_shared, total_exec_count_shared,))
+  #pool_map(p, run, range(conf.num_proc), conf=conf)
+  try:
+    func = partial(run, conf=conf)
+    return p.map(func, range(conf.num_proc))
+  except KeyboardInterrupt:
+    print_msg('Terminating workers ...', 'INFO')
+    with open("/home/shu/master-research/data/log_" + datetime.now().strftime("%Y%m%d%H%M%S") + ".txt", "w") as f:
+      f.write("Pass:" + str(pass_exec_count_shared.value) + "\n")
+      f.write("Total:" + str(total_exec_count_shared.value) + "\n")
+      f.write("Pass rate:" + str(pass_exec_count_shared.value / total_exec_count_shared.value) + "\n")
+    p.terminate()
+    p.join()
+    print_msg('Killed processes', 'INFO')
+    os.killpg(os.getpid(), signal.SIGKILL)
   #run(0, conf)
+
+def init(pass_exec_count, total_exec_count):
+  global pass_exec_count_shared, total_exec_count_shared
+  pass_exec_count_shared = pass_exec_count
+  total_exec_count_shared = total_exec_count
+  signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 def is_pruned(node):
   keys = node.keys()

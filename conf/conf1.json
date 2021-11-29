@@ -1,8 +1,8 @@
 {
-  "bug_dir": "/home/shu/master-research/bugs1/",
+  "bug_dir": "/home/shu/master-research/bugs/",
   "data_dir": "/home/shu/master-research/data",
   "eng_name": "d8",
-  "eng_path": "/home/shu/v8/v8/out/foo/d8",
+  "eng_path": "/home/shu/v8/v8/out/9.0.257.23/d8",
   "max_ins": 100,
   "model_path": "/home/shu/master-research/data/models/epoch-70.model",
   "model": {
@@ -16,7 +16,7 @@
     "weight_decay": 0.0001
   },
   "num_gpu": 1,
-  "num_proc": 10,
+  "num_proc": 12,
   "opt": [],
   "seed_dir": "/home/shu/js-test-suite/testsuite",
   "timeout": 20,

@@ -2,9 +2,7 @@ import os
 import random
 import sys
 import threading
-import heapq
 from copy import deepcopy
-import subprocess
 from subprocess import Popen
 from subprocess import PIPE
 
@@ -62,11 +60,6 @@ class Fuzzer:
      self._new_frag_dict,
      self._oov_pool,
      self._type_dict) = data
-    
-    self._seed_list = [[0, seed] for seed in self._seed_dict.keys()]
-    heapq.heapify(self._seed_list)
-    self._initial_mutation_count = 10
-    self._current_mutation_count = 0
 
     self.assign_gpu(proc_idx)
     update_builtins(conf.eng_path)
@@ -320,20 +313,12 @@ class Fuzzer:
       print_msg(msg, 'WARN')
 
   def select_seed(self):
-    #seed_list = list(self._seed_dict.keys())
+    seed_list = list(self._seed_dict.keys())
     frag_len = -1
-    
     while frag_len < 3:
-      if self._current_mutation_count < self._initial_mutation_count:
-        seed_name = random.choice(self._seed_list)[1]
-        frag_seq, _ = self._seed_dict[seed_name]
-        frag_len = len(frag_seq)
-      else:
-        seed_name = heapq.heappop(self._seed_list)[1]
-        frag_seq, _ = self._seed_dict[seed_name]
-        frag_len = len(frag_seq)
-
-    self._current_mutation_count += 1
+      seed_name = random.choice(seed_list)
+      frag_seq, _ = self._seed_dict[seed_name]
+      frag_len = len(frag_seq)
     return seed_name, frag_seq
 
   def traverse(self, node, frag_seq, stack):

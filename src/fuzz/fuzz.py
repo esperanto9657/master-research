@@ -39,6 +39,7 @@ from functools import partial
 class Fuzzer:
   def __init__(self, proc_idx, conf):
     self._eng_path = conf.eng_path
+    self._eng_name = conf.eng_name
     self._max_ins = conf.max_ins
     self._num_gpu = conf.num_gpu
     self._model_path = conf.model_path
@@ -46,6 +47,7 @@ class Fuzzer:
     self._seed_dir = conf.seed_dir
     self._bug_dir = os.path.join(conf.bug_dir,
                                  'proc.%d' % proc_idx)
+    self._cov_dir = conf.cov_dir
     self._timeout = conf.timeout
     self._top_k = conf.top_k
 
@@ -156,6 +158,7 @@ class Fuzzer:
     timer.start()
     stdout, stderr = proc.communicate()
     timer.cancel()
+    cov_path = os.path.join(self._cov_dir, self._eng_name + '.' + str(proc.pid) + '.sancov')
     if proc.returncode in [-4, -11]:
       log = [self._eng_path] + self._opt
       log += [js_path, str(proc.returncode)]
@@ -167,8 +170,10 @@ class Fuzzer:
         pass_exec_count_shared.value += 1
     elif proc.returncode == 1:
       os.remove(js_path)
+      os.remove(cov_path)
     else:
       os.remove(js_path)
+      os.remove(cov_path)
       with pass_exec_count_shared.get_lock():
         pass_exec_count_shared.value += 1
     with total_exec_count_shared.get_lock():

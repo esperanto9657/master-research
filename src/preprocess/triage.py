@@ -71,9 +71,9 @@ def get_err_msg(log, read_err=True):
   return error
 
 def get_func(eng_name):
-  if eng_name == 'chakra':
+  if eng_name == 'ch':
     return chakra
-  elif eng_name == 'v8':
+  elif eng_name == 'd8':
     return v8
   elif eng_name == 'moz':
     return moz

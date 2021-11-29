@@ -30,6 +30,7 @@ class Config:
 
     self.ast_dir = os.path.join(self.data_dir, 'ast')
     self.log_dir = os.path.join(self.data_dir, 'log')
+    self.cov_dir = os.path.join(self.data_dir, 'cov')
 
   def load_conf(self, conf_path):
     conf = read(conf_path, 'r')

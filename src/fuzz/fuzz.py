@@ -73,7 +73,7 @@ class Fuzzer:
     
     self._seed_list = [[0, seed] for seed in self._seed_dict.keys()]
     heapq.heapify(self._seed_list)
-    self._initial_mutation_count = 100
+    self._initial_mutation_count = 1000
     self._current_mutation_count = 0
     self._cov_set = set()
 

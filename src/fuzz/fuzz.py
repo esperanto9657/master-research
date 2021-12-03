@@ -168,7 +168,7 @@ class Fuzzer:
     stdout, stderr = proc.communicate()
     timer.cancel()
     #print("returncode:" + str(proc.returncode))
-    if proc.returncode in [-4, -11]:
+    if proc.returncode in [-4, -7, -11]:
       log = [self._eng_path] + self._opt
       log += [js_path, str(proc.returncode)]
       log = str.encode(','.join(log) + '\n')

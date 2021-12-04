@@ -161,7 +161,7 @@ class Fuzzer:
     cov_path = os.path.join(self._cov_dir, self._eng_name + '.' + str(proc.pid) + '.sancov')
     if proc.returncode in [-4, -7, -11]:
       log = [self._eng_path] + self._opt
-      log += [js_path, str(proc.returncode)]
+      log += [js_path, str(proc.returncode), str(stderr)]
       log = str.encode(','.join(log) + '\n')
       self._crash_log.write(log)
       msg = 'Found a bug (%s)' % js_path
@@ -170,10 +170,12 @@ class Fuzzer:
         pass_exec_count_shared.value += 1
     elif proc.returncode == 1:
       os.remove(js_path)
-      os.remove(cov_path)
+      if os.path.exists(cov_path):
+        os.remove(cov_path)
     else:
       os.remove(js_path)
-      os.remove(cov_path)
+      if os.path.exists(cov_path):
+        os.remove(cov_path)
       with pass_exec_count_shared.get_lock():
         pass_exec_count_shared.value += 1
     with total_exec_count_shared.get_lock():

@@ -170,7 +170,7 @@ class Fuzzer:
     #print("returncode:" + str(proc.returncode))
     if proc.returncode in [-4, -7, -11]:
       log = [self._eng_path] + self._opt
-      log += [js_path, str(proc.returncode)]
+      log += [js_path, str(proc.returncode), str(stderr)]
       log = str.encode(','.join(log) + '\n')
       self._crash_log.write(log)
       msg = 'Found a bug (%s)' % js_path

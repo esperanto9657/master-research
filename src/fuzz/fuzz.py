@@ -186,7 +186,6 @@ class Fuzzer:
                   stdout = PIPE, stderr = PIPE)
       cov_list = proc_sancov.communicate()[0].decode("utf-8").strip().split()
       score = len(set(cov_list) - self._cov_set)
-      print(score)
       self._cov_set |= set(cov_list)
       if score > 0:
         for frag_idx in appended_frags:

@@ -167,7 +167,7 @@ class Fuzzer:
     timer.start()
     stdout, stderr = proc.communicate()
     timer.cancel()
-    #print("returncode:" + str(proc.returncode))
+    cov_path = os.path.join(self._cov_dir, self._eng_name + '.' + str(proc.pid) + '.sancov')
     if proc.returncode in [-4, -7, -11]:
       log = [self._eng_path] + self._opt
       log += [js_path, str(proc.returncode), str(stderr)]
@@ -179,12 +179,10 @@ class Fuzzer:
         pass_exec_count_shared.value += 1
     elif proc.returncode == 1:
       os.remove(js_path)
-      cov_path = os.path.join(self._cov_dir, self._eng_name + '.' + str(proc.pid) + '.sancov')
       if os.path.exists(cov_path):
         os.remove(cov_path)
     else:
       os.remove(js_path)
-      cov_path = os.path.join(self._cov_dir, self._eng_name + '.' + str(proc.pid) + '.sancov')
       cmd_sancov = ['sancov', '-print', cov_path]
       proc_sancov = Popen(cmd_sancov, cwd = self._cov_dir,
                   stdout = PIPE, stderr = PIPE)

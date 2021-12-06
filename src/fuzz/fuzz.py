@@ -38,7 +38,6 @@ from utils.print import CodePrinter
 import signal
 from datetime import datetime
 from functools import partial
-from ctypes import c_wchar_p
 
 class Fuzzer:
   def __init__(self, proc_idx, conf):

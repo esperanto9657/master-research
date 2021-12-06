@@ -9,7 +9,7 @@ from subprocess import Popen
 from subprocess import PIPE
 
 import torch
-from torch.multiprocessing import Pool, Value
+from torch.multiprocessing import Pool, Value, Array, Manager
 from torch.multiprocessing import set_start_method
 
 from preprocess import fragmentize
@@ -38,6 +38,7 @@ from utils.print import CodePrinter
 import signal
 from datetime import datetime
 from functools import partial
+from ctypes import c_wchar_p
 
 class Fuzzer:
   def __init__(self, proc_idx, conf):
@@ -75,15 +76,15 @@ class Fuzzer:
     heapq.heapify(self._seed_list)
     self._initial_mutation_count = 1000
     self._current_mutation_count = 0
-    self._cov_set = set()
 
     self.assign_gpu(proc_idx)
     update_builtins(conf.eng_path)
 
   def append_frag(self, cand_list, valid_type, root, stack):
+    cand_weight = list(map(lambda x: frag_score_shared[x], cand_list))
     # Try all fragments in top k
     while len(cand_list) > 0:
-      cand_idx = random.choice(cand_list)
+      cand_idx = random.choices(cand_list, weights = cand_weight)[0]
       cand_frag = self._new_frag_list[cand_idx]
 
       if type(cand_frag) == dict:
@@ -97,6 +98,7 @@ class Fuzzer:
         frag = [cand_idx]
         return True, frag, parent_idx, frag_type
       else:
+        del cand_weight[cand_list.index(cand_idx)]
         cand_list.remove(cand_idx)
     return False, None, None, None
 
@@ -159,7 +161,7 @@ class Fuzzer:
     self.traverse(root, frag_seq, stack)
     return root, frag_seq
 
-  def exec_eng(self, js_path, root, original_seed_name):
+  def exec_eng(self, js_path, root, original_seed_name, appended_frags):
     cmd = [self._eng_path] + self._opt + [js_path]
     proc = Popen(cmd, cwd = self._seed_dir,
                  stdout = PIPE, stderr = PIPE)
@@ -175,6 +177,8 @@ class Fuzzer:
       self._crash_log.write(log)
       msg = 'Found a bug (%s)' % js_path
       print_msg(msg, 'INFO')
+      for frag_idx in appended_frags:
+        frag_score_shared[frag_idx] += 1
       with pass_exec_count_shared.get_lock():
         pass_exec_count_shared.value += 1
     elif proc.returncode == 1:
@@ -187,8 +191,14 @@ class Fuzzer:
       proc_sancov = Popen(cmd_sancov, cwd = self._cov_dir,
                   stdout = PIPE, stderr = PIPE)
       cov_list = proc_sancov.communicate()[0].decode("utf-8").strip().split()
-      score = len(set(cov_list) - self._cov_set)
-      self._cov_set |= set(cov_list)
+      cov_set = set(cov_set_shared)
+      new_cov_set = set(cov_list)
+      new_cov = list(new_cov_set - cov_set)
+      score = len(new_cov)
+      if score > 0:
+        cov_set_shared.extend(new_cov)
+        for frag_idx in appended_frags:
+          frag_score_shared[frag_idx] += 1
       new_seed_name = os.path.basename(js_path)
       heapq.heappush(self._seed_list, [-score, new_seed_name])
       frag_seq, frag_info_seq, node_type, stack = [], [], set(), []
@@ -244,10 +254,10 @@ class Fuzzer:
     printer = CodePrinter(self._bug_dir)
 
     while True:
-      js_path, root, original_seed_name = self.gen_code(printer, model)
+      js_path, root, original_seed_name, appended_frags = self.gen_code(printer, model)
       if js_path == None: continue
       js_path = os.path.abspath(js_path)
-      self.exec_eng(js_path, root, original_seed_name)
+      self.exec_eng(js_path, root, original_seed_name, appended_frags)
 
   def gen_code(self, printer, model):
     stack = []
@@ -255,11 +265,12 @@ class Fuzzer:
     (seed_name,
      root, model_input) = self.prepare_seed(model)
     frag, hidden, parent_idx, frag_type = model_input
+    appended_frags = []
 
     while parent_idx != None:
       # Check max insertion condition
       if ins_cnt >= self._max_ins:
-        return None, None, ""
+        return None, None, "", None
       else:
         ins_cnt += 1
 
@@ -283,14 +294,16 @@ class Fuzzer:
       if not found:
         msg = 'Failed to select valid frag at %d' % ins_cnt
         print_msg(msg, 'WARN')
-        return None, None, ""
+        return None, None, "", None
+      else:
+        appended_frags.append(frag[0])
 
     harness_list = self._harness.get_list(seed_name)
     self.resolve_errors(root, harness_list)
 
     new_root = self.postprocess(root, harness_list)
     js_path = printer.ast2code(new_root)
-    return js_path, root, seed_name
+    return js_path, root, seed_name, appended_frags
 
   def idx2frag(self, frag_idx):
     frag = self._frag_list[frag_idx]
@@ -443,15 +456,20 @@ class Fuzzer:
             child[idx] = frag
           self.traverse(child[idx], frag_seq, stack)
 
-pass_exec_count_shared, total_exec_count_shared = None, None
+pass_exec_count_shared, total_exec_count_shared, frag_score_shared, cov_set_shared = None, None, None, None
 
 def fuzz(conf):
-  global pass_exec_count_shared, total_exec_count_shared
+  global pass_exec_count_shared, total_exec_count_shared, frag_score_shared
   set_start_method('spawn')
   #p = Pool(conf.num_proc, init_worker, initargs=(pass_exec_count, total_exec_count,))
+  _, data = load_data(conf)
+  (new_frag_list, _, _, _) = data
   pass_exec_count_shared = Value("i", 0)
   total_exec_count_shared = Value("i", 0)
-  p = Pool(conf.num_proc, init, initargs=(pass_exec_count_shared, total_exec_count_shared,))
+  frag_score_shared = Array("i", [1] * len(new_frag_list))
+  manager = Manager()
+  cov_set_shared = manager.list()
+  p = Pool(conf.num_proc, init, initargs=(pass_exec_count_shared, total_exec_count_shared, frag_score_shared, cov_set_shared,))
   #pool_map(p, run, range(conf.num_proc), conf=conf)
   try:
     func = partial(run, conf=conf)
@@ -468,10 +486,12 @@ def fuzz(conf):
     os.killpg(os.getpid(), signal.SIGKILL)
   #run(0, conf)
 
-def init(pass_exec_count, total_exec_count):
-  global pass_exec_count_shared, total_exec_count_shared
+def init(pass_exec_count, total_exec_count, frag_score, cov_set):
+  global pass_exec_count_shared, total_exec_count_shared, frag_score_shared, cov_set_shared
   pass_exec_count_shared = pass_exec_count
   total_exec_count_shared = total_exec_count
+  frag_score_shared = frag_score
+  cov_set_shared = cov_set
   signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 def is_pruned(node):

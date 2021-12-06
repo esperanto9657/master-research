@@ -454,7 +454,9 @@ def fuzz(conf):
   #p = Pool(conf.num_proc, init_worker, initargs=(pass_exec_count, total_exec_count,))
   pass_exec_count_shared = Value("i", 0)
   total_exec_count_shared = Value("i", 0)
-  p = Pool(conf.num_proc, init, initargs=(pass_exec_count_shared, total_exec_count_shared,))
+  manager = Manager()
+  cov_set_shared = manager.list()
+  p = Pool(conf.num_proc, init, initargs=(pass_exec_count_shared, total_exec_count_shared, cov_set_shared,))
   #pool_map(p, run, range(conf.num_proc), conf=conf)
   try:
     func = partial(run, conf=conf)

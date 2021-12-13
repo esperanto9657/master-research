@@ -159,16 +159,23 @@ class Fuzzer:
     stdout, stderr = proc.communicate()
     timer.cancel()
     cov_path = os.path.join(self._cov_dir, self._eng_name + '.' + str(proc.pid) + '.sancov')
+    error = str(stderr)
     if proc.returncode in [-4, -7, -11]:
       log = [self._eng_path] + self._opt
-      log += [js_path, str(proc.returncode), str(stderr)]
+      log += [js_path, str(proc.returncode), str(proc.pid), error]
       log = str.encode(','.join(log) + '\n')
       self._crash_log.write(log)
       msg = 'Found a bug (%s)' % js_path
       print_msg(msg, 'INFO')
       with pass_exec_count_shared.get_lock():
         pass_exec_count_shared.value += 1
-    elif proc.returncode == 1:
+    elif (proc.returncode == 1 or
+      (self._eng_name == "ch" and ('SyntaxError:' in error or
+      'ReferenceError:' in error or
+      'TypeError:' in error or
+      'RangeError:' in error or
+      'URIError:' in error or
+      'Error in opening file:' in error))):
       os.remove(js_path)
       if os.path.exists(cov_path):
         os.remove(cov_path)

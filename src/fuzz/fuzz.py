@@ -52,6 +52,8 @@ class Fuzzer:
     self._top_k = conf.top_k
 
     self._harness = Harness(conf.seed_dir)
+    if not os.path.exists(self._cov_dir):
+      os.makedirs(self._cov_dir)
     if not os.path.exists(self._bug_dir):
       os.makedirs(self._bug_dir)
     log_path = os.path.join(self._bug_dir,

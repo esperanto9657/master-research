@@ -2,7 +2,7 @@ import os
 import random
 import sys
 import threading
-import heapq
+#import heapq
 from copy import deepcopy
 import subprocess
 from subprocess import Popen
@@ -71,10 +71,7 @@ class Fuzzer:
      self._oov_pool,
      self._type_dict) = data
     
-    self._seed_list = [[0, seed] for seed in self._seed_dict.keys()]
-    heapq.heapify(self._seed_list)
-    self._initial_mutation_count = 1000
-    self._current_mutation_count = 0
+    self._seed_list = self._seed_dict.keys()
     self._cov_set = set()
 
     self.assign_gpu(proc_idx)
@@ -199,7 +196,7 @@ class Fuzzer:
       if score > 0:
         self._cov_set |= new_cov_set
       new_seed_name = os.path.basename(js_path)
-      heapq.heappush(self._seed_list, [-score, new_seed_name])
+      self._seed_list.append(new_seed_name)
       frag_seq, frag_info_seq, node_type, stack = [], [], set(), []
       fragmentize.make_frags(root, frag_seq, frag_info_seq, node_type, stack)
       frag_seq = self.frag_seq2idx(frag_seq)
@@ -398,14 +395,9 @@ class Fuzzer:
     frag_len = -1
     
     while frag_len < 3:
-      if self._current_mutation_count < self._initial_mutation_count:
-        seed_score, seed_name = random.choice(self._seed_list)
-        frag_seq, _ = self._seed_dict[seed_name]
-        frag_len = len(frag_seq)
-      else:
-        seed_score, seed_name = heapq.heappop(self._seed_list)
-        frag_seq, _ = self._seed_dict[seed_name]
-        frag_len = len(frag_seq)
+      seed_name = random.choice(self._seed_list)
+      frag_seq, _ = self._seed_dict[seed_name]
+      frag_len = len(frag_seq)
     #print(seed_score, seed_name)
 
     self._current_mutation_count += 1

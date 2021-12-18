@@ -55,6 +55,8 @@ class Fuzzer:
     self._top_k = conf.top_k
 
     self._harness = Harness(conf.seed_dir)
+    if not os.path.exists(self._cov_dir):
+      os.makedirs(self._cov_dir)
     if not os.path.exists(self._bug_dir):
       os.makedirs(self._bug_dir)
     log_path = os.path.join(self._bug_dir,
@@ -71,7 +73,7 @@ class Fuzzer:
      self._oov_pool,
      self._type_dict) = data
     
-    self._seed_list = self._seed_dict.keys()
+    self._seed_list = list(self._seed_dict.keys())
     self._cov_set = set()
 
     self.assign_gpu(proc_idx)

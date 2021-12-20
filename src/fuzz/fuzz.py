@@ -489,7 +489,7 @@ def fuzz(conf):
       f.write("Pass:" + str(pass_exec_count_shared.value) + "\n")
       f.write("Total:" + str(total_exec_count_shared.value) + "\n")
       f.write("Pass rate:" + str(pass_exec_count_shared.value / total_exec_count_shared.value) + "\n")
-      print(error_count_shared, file = f)
+      print(list(error_count_shared), file = f)
     p.terminate()
     p.join()
     print_msg('Killed processes', 'INFO')

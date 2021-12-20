@@ -497,7 +497,7 @@ def fuzz(conf):
   #run(0, conf)
 
 def init(pass_exec_count, total_exec_count, frag_score, error_count):
-  global pass_exec_count_shared, total_exec_count_shared, frag_score_shared
+  global pass_exec_count_shared, total_exec_count_shared, frag_score_shared, error_count_shared
   pass_exec_count_shared = pass_exec_count
   total_exec_count_shared = total_exec_count
   frag_score_shared = frag_score

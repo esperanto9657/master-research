@@ -38,6 +38,7 @@ from utils.print import CodePrinter
 import signal
 from datetime import datetime
 from functools import partial
+import schedule
 
 class Fuzzer:
   def __init__(self, proc_idx, conf):
@@ -62,6 +63,9 @@ class Fuzzer:
     log_path = os.path.join(self._bug_dir,
                             'logs.csv')
     self._crash_log = open(log_path, 'ab', 0)
+    cov_path = os.path.join(self._bug_dir,
+                            'cov.csv')
+    self._cov_log = open(cov_path, 'wb', 0)
 
     seed, data = load_data(conf)
     (self._seed_dict,
@@ -257,7 +261,10 @@ class Fuzzer:
 
     printer = CodePrinter(self._bug_dir)
 
+    schedule.every(48).hours.do(self.log_cov)
+
     while True:
+      schedule.run_pending()
       js_path, root, original_seed_name, appended_frags = self.gen_code(printer, model)
       if js_path == None: continue
       js_path = os.path.abspath(js_path)
@@ -328,6 +335,11 @@ class Fuzzer:
       return frag in self._oov_pool[frag_type] # Maybe use hash_frag to compare and judge
     else:
       return False
+
+  def log_cov(self):
+    for cov in self._cov_set:
+      line = str.encode(cov + "\n")
+      self._cov_log.write(line)
 
   def postprocess(self, root, harness_list):
     # Insert Load

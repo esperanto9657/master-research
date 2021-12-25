@@ -35,6 +35,7 @@ from utils.print import CodePrinter
 import signal
 from datetime import datetime
 from functools import partial
+import schedule
 
 class Fuzzer:
   def __init__(self, proc_idx, conf):
@@ -59,6 +60,9 @@ class Fuzzer:
     log_path = os.path.join(self._bug_dir,
                             'logs.csv')
     self._crash_log = open(log_path, 'ab', 0)
+    cov_path = os.path.join(self._bug_dir,
+                            'cov.csv')
+    self._cov_log = open(cov_path, 'wb', 0)
 
     seed, data = load_data(conf)
     (self._seed_dict,
@@ -234,7 +238,10 @@ class Fuzzer:
 
     printer = CodePrinter(self._bug_dir)
 
+    schedule.every(48).hours.do(self.log_cov)
+
     while True:
+      schedule.run_pending()
       js_path, appended_frags = self.gen_code(printer, model)
       if js_path == None: continue
       js_path = os.path.abspath(js_path)
@@ -299,6 +306,11 @@ class Fuzzer:
                             tensor_type="Float")
     return parent_idx, frag_type
 
+  def log_cov(self):
+    for cov in self._cov_set:
+      line = str.encode(cov + "\n")
+      self._cov_log.write(line)
+      
   def postprocess(self, root, harness_list):
     # Insert Load
     body = [get_define_node(self._seed_dir)]

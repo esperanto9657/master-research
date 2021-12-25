@@ -38,6 +38,7 @@ from utils.print import CodePrinter
 import signal
 from datetime import datetime
 from functools import partial
+import schedule
 
 class Fuzzer:
   def __init__(self, proc_idx, conf):
@@ -62,6 +63,9 @@ class Fuzzer:
     log_path = os.path.join(self._bug_dir,
                             'logs.csv')
     self._crash_log = open(log_path, 'ab', 0)
+    cov_path = os.path.join(self._bug_dir,
+                            'cov.csv')
+    self._cov_log = open(cov_path, 'wb', 0)
 
     seed, data = load_data(conf)
     (self._seed_dict,
@@ -251,7 +255,10 @@ class Fuzzer:
 
     printer = CodePrinter(self._bug_dir)
 
+    schedule.every(48).hours.do(self.log_cov)
+
     while True:
+      schedule.run_pending()
       js_path, root, original_seed_name = self.gen_code(printer, model)
       if js_path == None: continue
       js_path = os.path.abspath(js_path)
@@ -319,6 +326,11 @@ class Fuzzer:
       return frag in self._oov_pool[frag_type] # Maybe use hash_frag to compare and judge
     else:
       return False
+
+  def log_cov(self):
+    for cov in self._cov_set:
+      line = str.encode(cov + "\n")
+      self._cov_log.write(line)
 
   def postprocess(self, root, harness_list):
     # Insert Load
@@ -460,10 +472,17 @@ def fuzz(conf):
     return p.map(func, range(conf.num_proc))
   except KeyboardInterrupt:
     print_msg('Terminating workers ...', 'INFO')
+    final_cov = set()  
+    for i in range(conf.num_proc):
+      cov_path = [conf.bug_dir, 'proc.' + i, 'cov.csv']
+      with open(os.path.join(cov_path), "r") as f:
+        final_cov |= set(f.readlines())
     with open("/home/shu/master-research/data/log_" + datetime.now().strftime("%Y%m%d%H%M%S") + ".txt", "w") as f:
       f.write("Pass:" + str(pass_exec_count_shared.value) + "\n")
       f.write("Total:" + str(total_exec_count_shared.value) + "\n")
       f.write("Pass rate:" + str(pass_exec_count_shared.value / total_exec_count_shared.value) + "\n")
+      f.write("Coverage:" + str(len(final_cov)) + "\n")
+
     p.terminate()
     p.join()
     print_msg('Killed processes', 'INFO')

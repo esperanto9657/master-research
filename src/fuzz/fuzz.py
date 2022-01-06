@@ -53,6 +53,8 @@ class Fuzzer:
     self._top_k = conf.top_k
 
     self._harness = Harness(conf.seed_dir)
+    if not os.path.exists(self._cov_dir):
+      os.makedirs(self._cov_dir)
     if not os.path.exists(self._bug_dir):
       os.makedirs(self._bug_dir)
     log_path = os.path.join(self._bug_dir,
@@ -71,6 +73,8 @@ class Fuzzer:
      self._new_frag_dict,
      self._oov_pool,
      self._type_dict) = data
+
+    self._cov_set = set()
 
     self.assign_gpu(proc_idx)
     update_builtins(conf.eng_path)
@@ -165,8 +169,16 @@ class Fuzzer:
     cov_path = os.path.join(self._cov_dir, self._eng_name + '.' + str(proc.pid) + '.sancov')
     error = str(stderr)
     if proc.returncode in [-4, -7, -11]:
+      cmd_sancov = ['sancov', '-print', cov_path]
+      proc_sancov = Popen(cmd_sancov, cwd = self._cov_dir,
+                  stdout = PIPE, stderr = PIPE)
+      cov_list = proc_sancov.communicate()[0].decode("utf-8").strip().split()
+      new_cov_set = set(cov_list)
+      score = len(new_cov_set - self._cov_set)
+      if score > 0:
+        self._cov_set |= new_cov_set
       log = [self._eng_path] + self._opt
-      log += [js_path, str(proc.returncode), str(proc.pid), error]
+      log += [js_path, str(proc.returncode), str(proc.pid), str(score), error]
       log = str.encode(','.join(log) + '\n')
       self._crash_log.write(log)
       msg = 'Found a bug (%s)' % js_path
@@ -185,6 +197,14 @@ class Fuzzer:
         os.remove(cov_path)
     else:
       os.remove(js_path)
+      cmd_sancov = ['sancov', '-print', cov_path]
+      proc_sancov = Popen(cmd_sancov, cwd = self._cov_dir,
+                  stdout = PIPE, stderr = PIPE)
+      cov_list = proc_sancov.communicate()[0].decode("utf-8").strip().split()
+      new_cov_set = set(cov_list)
+      score = len(new_cov_set - self._cov_set)
+      if score > 0:
+        self._cov_set |= new_cov_set
       if os.path.exists(cov_path):
         os.remove(cov_path)
       with pass_exec_count_shared.get_lock():

@@ -446,11 +446,14 @@ def fuzz(conf):
       cov_path = [conf.bug_dir, 'proc.' + str(i), 'cov.csv']
       with open(os.path.join(*cov_path), "r") as f:
         final_cov |= set(f.readlines())
+    with open("/home/shu/master-research/data/seed_coverage.txt", "r") as f:
+      seed_cov = set(f.readlines())
     with open("/home/shu/master-research/data/log_" + datetime.now().strftime("%Y%m%d%H%M%S") + ".txt", "w") as f:
       f.write("Pass:" + str(pass_exec_count_shared.value) + "\n")
       f.write("Total:" + str(total_exec_count_shared.value) + "\n")
       f.write("Pass rate:" + str(pass_exec_count_shared.value / total_exec_count_shared.value) + "\n")
       f.write("Coverage:" + str(len(final_cov)) + "\n")
+      f.write("Coverage diff:" + str(len(final_cov - seed_cov)) + "\n")
     p.terminate()
     p.join()
     print_msg('Killed processes', 'INFO')

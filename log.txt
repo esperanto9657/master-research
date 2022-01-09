@@ -1,2 +1,188 @@
 len(frag_list): 111635
 len(new_frag_list): 14266
+len(seed_list): 118532
+Non-left recrusion:71
+Recursive fragments:
+{'type': 'MemberExpression', 'computed': False, 'object': {'type': 'MemberExpression'}, 'property': {'type': 'Identifier'}}
+{'type': 'BinaryExpression', 'operator': '+', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '+', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'MemberExpression', 'computed': True, 'object': {'type': 'MemberExpression'}, 'property': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '+', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'MemberExpression'}}
+{'type': 'BinaryExpression', 'operator': '!==', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '+', 'left': {'type': 'Literal'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'MemberExpression', 'computed': True, 'object': {'type': 'Identifier'}, 'property': {'type': 'MemberExpression'}}
+{'type': 'BinaryExpression', 'operator': '+', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'CallExpression'}}
+{'type': 'LogicalExpression', 'operator': '&&', 'left': {'type': 'LogicalExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'LogicalExpression', 'operator': '||', 'left': {'type': 'LogicalExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '+', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '+', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'MemberExpression', 'computed': True, 'object': {'type': 'MemberExpression'}, 'property': {'type': 'Identifier'}}
+{'type': 'MemberExpression', 'computed': True, 'object': {'type': 'MemberExpression'}, 'property': {'type': 'MemberExpression'}}
+{'type': 'MemberExpression', 'computed': True, 'object': {'type': 'MemberExpression'}, 'property': {'type': 'MemberExpression'}}
+{'type': 'AssignmentExpression', 'operator': '=', 'left': {'type': 'Identifier'}, 'right': {'type': 'AssignmentExpression'}}
+{'type': 'CallExpression', 'callee': {'type': 'CallExpression'}, 'arguments': []}
+{'type': 'BinaryExpression', 'operator': '<', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'LogicalExpression', 'operator': '||', 'left': {'type': 'LogicalExpression'}, 'right': {'type': 'LogicalExpression'}}
+{'type': 'LogicalExpression', 'operator': '||', 'left': {'type': 'LogicalExpression'}, 'right': {'type': 'LogicalExpression'}}
+{'type': 'BinaryExpression', 'operator': '==', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'IfStatement', 'test': {'type': 'BinaryExpression'}, 'consequent': {'type': 'BlockStatement'}, 'alternate': {'type': 'IfStatement'}}
+{'type': 'BinaryExpression', 'operator': '!==', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'MemberExpression'}}
+{'type': 'BinaryExpression', 'operator': '*', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '-', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '|', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '/', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '<<', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'UnaryExpression', 'operator': '!', 'argument': {'type': 'UnaryExpression'}, 'prefix': True}
+{'type': 'BinaryExpression', 'operator': '+', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '===', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '<=', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '>>', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '!==', 'left': {'type': 'CallExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '-', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'CallExpression'}}
+{'type': 'BinaryExpression', 'operator': '!==', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'UnaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '<=', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'BinaryExpression', 'operator': '>>>', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'MemberExpression', 'computed': True, 'object': {'type': 'Literal'}, 'property': {'type': 'MemberExpression'}}
+{'type': 'IfStatement', 'test': {'type': 'BinaryExpression'}, 'consequent': {'type': 'ExpressionStatement'}, 'alternate': {'type': 'IfStatement'}}
+{'type': 'BinaryExpression', 'operator': '+', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'ConditionalExpression'}}
+{'type': 'BinaryExpression', 'operator': '%', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '&', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '&', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '&', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '!=', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '!=', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '-', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '-', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'AssignmentExpression', 'operator': '=', 'left': {'type': 'MemberExpression'}, 'right': {'type': 'AssignmentExpression'}}
+{'type': 'BinaryExpression', 'operator': '/', 'left': {'type': 'Literal'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '+', 'left': {'type': 'CallExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '<<', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'BinaryExpression', 'operator': '*', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'BinaryExpression', 'operator': '-', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'BinaryExpression', 'operator': '*', 'left': {'type': 'Literal'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '!==', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '!==', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '!==', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '|', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '|', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '>>', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'BinaryExpression', 'operator': '/', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '>>>', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'LogicalExpression', 'operator': '&&', 'left': {'type': 'LogicalExpression'}, 'right': {'type': 'UnaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '%', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'CallExpression'}}
+{'type': 'BinaryExpression', 'operator': '^', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'MemberExpression'}}
+{'type': 'BinaryExpression', 'operator': '+', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'TemplateLiteral'}}
+{'type': 'BinaryExpression', 'operator': '/', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'LogicalExpression', 'operator': '||', 'left': {'type': 'LogicalExpression'}, 'right': {'type': 'CallExpression'}}
+{'type': 'LogicalExpression', 'operator': '||', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'LogicalExpression'}}
+{'type': 'BinaryExpression', 'operator': '!=', 'left': {'type': 'MemberExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'MemberExpression', 'computed': True, 'object': {'type': 'MemberExpression'}, 'property': {'type': 'BinaryExpression'}}
+{'type': 'CallExpression', 'callee': {'type': 'CallExpression'}, 'arguments': [{'type': 'Literal'}]}
+{'type': 'UnaryExpression', 'operator': '+', 'argument': {'type': 'UnaryExpression'}, 'prefix': True}
+{'type': 'BinaryExpression', 'operator': '<=', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'ArrowFunctionExpression', 'id': None, 'params': [], 'body': {'type': 'ArrowFunctionExpression'}, 'generator': False, 'async': False, 'expression': True}
+{'type': 'BinaryExpression', 'operator': '==', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'IfStatement', 'test': {'type': 'LogicalExpression'}, 'consequent': {'type': 'BlockStatement'}, 'alternate': {'type': 'IfStatement'}}
+{'type': 'BinaryExpression', 'operator': '+', 'left': {'type': 'MemberExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '==', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '==', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'MemberExpression', 'computed': True, 'object': {'type': 'ArrayExpression'}, 'property': {'type': 'MemberExpression'}}
+{'type': 'BinaryExpression', 'operator': '<', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'UnaryExpression', 'operator': '-', 'argument': {'type': 'UnaryExpression'}, 'prefix': True}
+{'type': 'BinaryExpression', 'operator': '+', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'UnaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '!==', 'left': {'type': 'UpdateExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '*', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '>=', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '!==', 'left': {'type': 'Literal'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '-', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '>', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'UnaryExpression', 'operator': 'typeof', 'argument': {'type': 'UnaryExpression'}, 'prefix': True}
+{'type': 'UnaryExpression', 'operator': '~', 'argument': {'type': 'UnaryExpression'}, 'prefix': True}
+{'type': 'BinaryExpression', 'operator': '-', 'left': {'type': 'Literal'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '!==', 'left': {'type': 'MemberExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '>=', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'CallExpression'}}
+{'type': 'BinaryExpression', 'operator': '>', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'CallExpression'}}
+{'type': 'BinaryExpression', 'operator': '<<', 'left': {'type': 'Literal'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '===', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '===', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'LogicalExpression', 'operator': '&&', 'left': {'type': 'LogicalExpression'}, 'right': {'type': 'CallExpression'}}
+{'type': 'LogicalExpression', 'operator': '&&', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'LogicalExpression'}}
+{'type': 'BinaryExpression', 'operator': '&', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '>>', 'left': {'type': 'MemberExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'LogicalExpression', 'operator': '&&', 'left': {'type': 'LogicalExpression'}, 'right': {'type': 'LogicalExpression'}}
+{'type': 'LogicalExpression', 'operator': '&&', 'left': {'type': 'LogicalExpression'}, 'right': {'type': 'LogicalExpression'}}
+{'type': 'LabeledStatement', 'label': {'type': 'Identifier'}, 'body': {'type': 'LabeledStatement'}}
+{'type': 'BinaryExpression', 'operator': '|', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'LogicalExpression', 'operator': '&&', 'left': {'type': 'LogicalExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'ConditionalExpression', 'test': {'type': 'BinaryExpression'}, 'consequent': {'type': 'Literal'}, 'alternate': {'type': 'ConditionalExpression'}}
+{'type': 'AssignmentExpression', 'operator': '+=', 'left': {'type': 'MemberExpression'}, 'right': {'type': 'AssignmentExpression'}}
+{'type': 'MemberExpression', 'computed': True, 'object': {'type': 'ThisExpression'}, 'property': {'type': 'MemberExpression'}}
+{'type': 'LogicalExpression', 'operator': '||', 'left': {'type': 'LogicalExpression'}, 'right': {'type': 'UnaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '*', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '*', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'MemberExpression', 'computed': True, 'object': {'type': 'NewExpression'}, 'property': {'type': 'MemberExpression'}}
+{'type': 'BinaryExpression', 'operator': '>', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'BinaryExpression', 'operator': '^', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '^', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'IfStatement', 'test': {'type': 'Identifier'}, 'consequent': {'type': 'ExpressionStatement'}, 'alternate': {'type': 'IfStatement'}}
+{'type': 'BinaryExpression', 'operator': '>>>', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'ConditionalExpression', 'test': {'type': 'BinaryExpression'}, 'consequent': {'type': 'UnaryExpression'}, 'alternate': {'type': 'ConditionalExpression'}}
+{'type': 'LogicalExpression', 'operator': '||', 'left': {'type': 'LogicalExpression'}, 'right': {'type': 'MemberExpression'}}
+{'type': 'BinaryExpression', 'operator': '===', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'MemberExpression', 'computed': True, 'object': {'type': 'MemberExpression'}, 'property': {'type': 'UpdateExpression'}}
+{'type': 'MemberExpression', 'computed': True, 'object': {'type': 'CallExpression'}, 'property': {'type': 'MemberExpression'}}
+{'type': 'CallExpression', 'callee': {'type': 'CallExpression'}, 'arguments': [{'type': 'CallExpression'}]}
+{'type': 'IfStatement', 'test': {'type': 'UnaryExpression'}, 'consequent': {'type': 'BlockStatement'}, 'alternate': {'type': 'IfStatement'}}
+{'type': 'BinaryExpression', 'operator': '&', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'CallExpression'}}
+{'type': 'IfStatement', 'test': {'type': 'Identifier'}, 'consequent': {'type': 'BlockStatement'}, 'alternate': {'type': 'IfStatement'}}
+{'type': 'BinaryExpression', 'operator': '===', 'left': {'type': 'CallExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '<', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'BinaryExpression', 'operator': '===', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'UnaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '<', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'MemberExpression'}}
+{'type': 'CallExpression', 'callee': {'type': 'CallExpression'}, 'arguments': [{'type': 'Identifier'}]}
+{'type': 'BinaryExpression', 'operator': 'in', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'BinaryExpression', 'operator': '*', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'MemberExpression'}}
+{'type': 'BinaryExpression', 'operator': '%', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'MemberExpression'}}
+{'type': 'BinaryExpression', 'operator': '<<', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '*', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'CallExpression'}}
+{'type': 'LogicalExpression', 'operator': '&&', 'left': {'type': 'LogicalExpression'}, 'right': {'type': 'MemberExpression'}}
+{'type': 'BinaryExpression', 'operator': '/', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '/', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '|', 'left': {'type': 'Literal'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '!=', 'left': {'type': 'CallExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '|', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '<<', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '<<', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '^', 'left': {'type': 'MemberExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '%', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'CallExpression', 'callee': {'type': 'CallExpression'}, 'arguments': [{'type': 'Literal'}, {'type': 'Literal'}]}
+{'type': 'ForStatement', 'init': {'type': 'VariableDeclaration'}, 'test': {'type': 'BinaryExpression'}, 'update': {'type': 'UpdateExpression'}, 'body': {'type': 'ForStatement'}}
+{'type': 'ForStatement', 'init': {'type': 'AssignmentExpression'}, 'test': {'type': 'BinaryExpression'}, 'update': {'type': 'UpdateExpression'}, 'body': {'type': 'ForStatement'}}
+{'type': 'IfStatement', 'test': {'type': 'BinaryExpression'}, 'consequent': {'type': 'IfStatement'}, 'alternate': {'type': 'IfStatement'}}
+{'type': 'IfStatement', 'test': {'type': 'BinaryExpression'}, 'consequent': {'type': 'IfStatement'}, 'alternate': {'type': 'IfStatement'}}
+{'type': 'BinaryExpression', 'operator': '>>', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '>', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'IfStatement', 'test': {'type': 'Literal'}, 'consequent': {'type': 'IfStatement'}, 'alternate': None}
+{'type': 'IfStatement', 'test': {'type': 'BinaryExpression'}, 'consequent': {'type': 'ReturnStatement'}, 'alternate': {'type': 'IfStatement'}}
+{'type': 'BinaryExpression', 'operator': '-', 'left': {'type': 'CallExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'ArrowFunctionExpression', 'id': None, 'params': [{'type': 'Identifier'}, {'type': 'Identifier'}], 'body': {'type': 'ArrowFunctionExpression'}, 'generator': False, 'async': False, 'expression': True}
+{'type': 'BinaryExpression', 'operator': '&', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'BinaryExpression', 'operator': '^', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Identifier'}}
+{'type': 'ConditionalExpression', 'test': {'type': 'BinaryExpression'}, 'consequent': {'type': 'ConditionalExpression'}, 'alternate': {'type': 'Literal'}}
+{'type': 'LogicalExpression', 'operator': '||', 'left': {'type': 'LogicalExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'ArrowFunctionExpression', 'id': None, 'params': [{'type': 'Identifier'}], 'body': {'type': 'ArrowFunctionExpression'}, 'generator': False, 'async': False, 'expression': True}
+{'type': 'BinaryExpression', 'operator': '^', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'Literal'}}
+{'type': 'BinaryExpression', 'operator': '&', 'left': {'type': 'MemberExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'NewExpression', 'callee': {'type': 'NewExpression'}, 'arguments': []}
+{'type': 'UnaryExpression', 'operator': 'void', 'argument': {'type': 'UnaryExpression'}, 'prefix': True}
+{'type': 'YieldExpression', 'argument': {'type': 'YieldExpression'}, 'delegate': False}
+{'type': 'CallExpression', 'callee': {'type': 'CallExpression'}, 'arguments': [{'type': 'BinaryExpression'}]}
+{'type': 'MemberExpression', 'computed': True, 'object': {'type': 'FunctionExpression'}, 'property': {'type': 'MemberExpression'}}
+{'type': 'BinaryExpression', 'operator': '-', 'left': {'type': 'MemberExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'MemberExpression', 'computed': True, 'object': {'type': 'MemberExpression'}, 'property': {'type': 'CallExpression'}}
+{'type': 'BinaryExpression', 'operator': '>>', 'left': {'type': 'Literal'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'AssignmentExpression', 'operator': '+=', 'left': {'type': 'Identifier'}, 'right': {'type': 'AssignmentExpression'}}
+{'type': 'BinaryExpression', 'operator': '>>>', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '>>>', 'left': {'type': 'BinaryExpression'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'BinaryExpression', 'operator': '^', 'left': {'type': 'Identifier'}, 'right': {'type': 'BinaryExpression'}}
+{'type': 'ForInStatement', 'left': {'type': 'VariableDeclaration'}, 'right': {'type': 'Identifier'}, 'body': {'type': 'ForInStatement'}, 'each': False}

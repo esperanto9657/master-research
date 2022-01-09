@@ -169,16 +169,8 @@ class Fuzzer:
     cov_path = os.path.join(self._cov_dir, self._eng_name + '.' + str(proc.pid) + '.sancov')
     error = str(stderr)
     if proc.returncode in [-4, -7, -11]:
-      cmd_sancov = ['sancov', '-print', cov_path]
-      proc_sancov = Popen(cmd_sancov, cwd = self._cov_dir,
-                  stdout = PIPE, stderr = PIPE)
-      cov_list = proc_sancov.communicate()[0].decode("utf-8").strip().split()
-      new_cov_set = set(cov_list)
-      score = len(new_cov_set - self._cov_set)
-      if score > 0:
-        self._cov_set |= new_cov_set
       log = [self._eng_path] + self._opt
-      log += [js_path, str(proc.returncode), str(proc.pid), str(score), error]
+      log += [js_path, str(proc.returncode), str(proc.pid), error]
       log = str.encode(','.join(log) + '\n')
       self._crash_log.write(log)
       msg = 'Found a bug (%s)' % js_path
@@ -441,11 +433,14 @@ def fuzz(conf):
       cov_path = [conf.bug_dir, 'proc.' + str(i), 'cov.csv']
       with open(os.path.join(*cov_path), "r") as f:
         final_cov |= set(f.readlines())
+    with open("/home/shu/master-research/data/seed_coverage.txt", "r") as f:
+      seed_cov = set(f.readlines())
     with open("/home/shu/master-research/data/log_" + datetime.now().strftime("%Y%m%d%H%M%S") + ".txt", "w") as f:
       f.write("Pass:" + str(pass_exec_count_shared.value) + "\n")
       f.write("Total:" + str(total_exec_count_shared.value) + "\n")
       f.write("Pass rate:" + str(pass_exec_count_shared.value / total_exec_count_shared.value) + "\n")
       f.write("Coverage:" + str(len(final_cov)) + "\n")
+      f.write("Coverage diff:" + str(len(final_cov - seed_cov)) + "\n")
     p.terminate()
     p.join()
     print_msg('Killed processes', 'INFO')

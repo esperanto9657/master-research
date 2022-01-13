@@ -257,6 +257,14 @@ class Fuzzer:
 
       frag = data2tensor(frag)
       valid_type = frag_type
+      parent_frag = self.idx2frag(parent_idx)
+      parent_type = get_node_type(parent_frag)
+      if valid_type == parent_type:
+        if random.random() > 0.5:
+          parent_idx, frag_type = self.expand_ast(parent_frag,
+                                                    stack, root)
+          frag = [parent_idx]
+          continue
       parent_idx, frag_type = self.info2tensor(parent_idx,
                                                frag_type)
       outputs, hidden = model.run(frag, hidden,

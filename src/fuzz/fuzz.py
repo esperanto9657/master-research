@@ -260,7 +260,7 @@ class Fuzzer:
       parent_frag = self.idx2frag(parent_idx)
       parent_type = get_node_type(parent_frag)
       if valid_type == parent_type:
-        if random.random() > 0.5:
+        if random.random() < 0.1:
           parent_idx, frag_type = self.expand_ast(parent_frag,
                                                     stack, root)
           frag = [parent_idx]

@@ -7,7 +7,7 @@ from subprocess import Popen
 from subprocess import PIPE
 
 import torch
-from torch.multiprocessing import Pool, Value
+from torch.multiprocessing import Pool, Value, Array
 from torch.multiprocessing import set_start_method
 
 from fuzz.resolve import hoisting
@@ -187,6 +187,20 @@ class Fuzzer:
       os.remove(js_path)
       if os.path.exists(cov_path):
         os.remove(cov_path)
+      if os.path.exists(cov_path):
+        os.remove(cov_path)
+      if 'SyntaxError:' in error:
+        error_count_shared[0] += 1
+      elif 'ReferenceError:' in error:
+        error_count_shared[1] += 1
+      elif 'TypeError:' in error:
+        error_count_shared[2] += 1
+      elif 'RangeError:' in error:
+        error_count_shared[3] += 1
+      elif 'URIError:' in error:
+        error_count_shared[4] += 1
+      else:
+        error_count_shared[5] += 1
     else:
       os.remove(js_path)
       cmd_sancov = ['sancov', '-print', cov_path]
@@ -421,43 +435,46 @@ class Fuzzer:
             child[idx] = frag
           self.traverse(child[idx], frag_seq, stack)
 
-pass_exec_count_shared, total_exec_count_shared = None, None
+pass_exec_count_shared, total_exec_count_shared, error_count_shared = None, None, None
 
 def fuzz(conf):
-  global pass_exec_count_shared, total_exec_count_shared
+  global pass_exec_count_shared, total_exec_count_shared, error_count_shared
   set_start_method('spawn')
   #p = Pool(conf.num_proc, init_worker)
   pass_exec_count_shared = Value("i", 0)
   total_exec_count_shared = Value("i", 0)
-  p = Pool(conf.num_proc, init, initargs=(pass_exec_count_shared, total_exec_count_shared,))
+  error_count_shared = Array("i", [0] * 6)
+  p = Pool(conf.num_proc, init, initargs=(pass_exec_count_shared, total_exec_count_shared, error_count_shared,))
   #pool_map(p, run, range(conf.num_proc), conf=conf)
   try:
     func = partial(run, conf=conf)
     return p.map(func, range(conf.num_proc))
   except KeyboardInterrupt:
     print_msg('Terminating workers ...', 'INFO')
-    final_cov = set()  
-    for i in range(conf.num_proc):
-      cov_path = [conf.bug_dir, 'proc.' + str(i), 'cov.csv']
-      with open(os.path.join(*cov_path), "r") as f:
-        final_cov |= set(f.readlines())
-    with open("/home/shu/master-research/data/seed_coverage.txt", "r") as f:
-      seed_cov = set(f.readlines())
+    # final_cov = set()  
+    # for i in range(conf.num_proc):
+    #   cov_path = [conf.bug_dir, 'proc.' + str(i), 'cov.csv']
+    #   with open(os.path.join(*cov_path), "r") as f:
+    #     final_cov |= set(f.readlines())
+    # with open("/home/shu/master-research/data/seed_coverage.txt", "r") as f:
+    #   seed_cov = set(f.readlines())
     with open("/home/shu/master-research/data/log_" + datetime.now().strftime("%Y%m%d%H%M%S") + ".txt", "w") as f:
       f.write("Pass:" + str(pass_exec_count_shared.value) + "\n")
       f.write("Total:" + str(total_exec_count_shared.value) + "\n")
       f.write("Pass rate:" + str(pass_exec_count_shared.value / total_exec_count_shared.value) + "\n")
-      f.write("Coverage:" + str(len(final_cov)) + "\n")
-      f.write("Coverage diff:" + str(len(final_cov - seed_cov)) + "\n")
+      # f.write("Coverage:" + str(len(final_cov)) + "\n")
+      # f.write("Coverage diff:" + str(len(final_cov - seed_cov)) + "\n")
+      print(list(error_count_shared), file=f)
     p.terminate()
     p.join()
     print_msg('Killed processes', 'INFO')
     os.killpg(os.getpid(), signal.SIGKILL)
 
-def init(pass_exec_count, total_exec_count):
-  global pass_exec_count_shared, total_exec_count_shared
+def init(pass_exec_count, total_exec_count, error_count):
+  global pass_exec_count_shared, total_exec_count_shared, error_count_shared
   pass_exec_count_shared = pass_exec_count
   total_exec_count_shared = total_exec_count
+  error_count_shared = error_count
   signal.signal(signal.SIGINT, signal.SIG_IGN)
 
 def is_pruned(node):

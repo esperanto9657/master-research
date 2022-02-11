@@ -60,9 +60,7 @@ class Fuzzer:
     log_path = os.path.join(self._bug_dir,
                             'logs.csv')
     self._crash_log = open(log_path, 'ab', 0)
-    cov_path = os.path.join(self._bug_dir,
-                            'cov.csv')
-    self._cov_log = open(cov_path, 'wb', 0)
+    self._day_count = 1
 
     seed, data = load_data(conf)
     (self._seed_dict,
@@ -232,7 +230,7 @@ class Fuzzer:
 
     printer = CodePrinter(self._bug_dir)
 
-    schedule.every(48).hours.do(self.log_cov)
+    schedule.every(24).hours.do(self.log_cov)
 
     while True:
       schedule.run_pending()
@@ -298,9 +296,13 @@ class Fuzzer:
     return parent_idx, frag_type
 
   def log_cov(self):
+    cov_path = os.path.join(self._bug_dir,
+                            'cov' + str(self._day_count) + '.csv')
+    cov_log = open(cov_path, 'wb', 0)
+    self._day_count += 1
     for cov in self._cov_set:
       line = str.encode(cov + "\n")
-      self._cov_log.write(line)
+      cov_log.write(line)
 
   def postprocess(self, root, harness_list):
     # Insert Load

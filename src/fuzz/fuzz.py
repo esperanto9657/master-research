@@ -63,9 +63,7 @@ class Fuzzer:
     log_path = os.path.join(self._bug_dir,
                             'logs.csv')
     self._crash_log = open(log_path, 'ab', 0)
-    cov_path = os.path.join(self._bug_dir,
-                            'cov.csv')
-    self._cov_log = open(cov_path, 'wb', 0)
+    self._day_count = 0
 
     seed, data = load_data(conf)
     (self._seed_dict,
@@ -261,7 +259,7 @@ class Fuzzer:
 
     printer = CodePrinter(self._bug_dir)
 
-    schedule.every(48).hours.do(self.log_cov)
+    schedule.every(24).hours.do(self.log_cov)
 
     while True:
       schedule.run_pending()
@@ -345,9 +343,13 @@ class Fuzzer:
       return False
 
   def log_cov(self):
+    self._day_count += 1
+    cov_path = os.path.join(self._bug_dir,
+                            'cov' + str(self._day_count) + '.csv')
+    cov_log = open(cov_path, 'wb', 0)
     for cov in self._cov_set:
       line = str.encode(cov + "\n")
-      self._cov_log.write(line)
+      cov_log.write(line)
 
   def postprocess(self, root, harness_list):
     # Insert Load
@@ -494,7 +496,7 @@ def fuzz(conf):
     print_msg('Terminating workers ...', 'INFO')
     final_cov = set()  
     for i in range(conf.num_proc):
-      cov_path = [conf.bug_dir, 'proc.' + str(i), 'cov.csv']
+      cov_path = [conf.bug_dir, 'proc.' + str(i), 'cov7.csv']
       with open(os.path.join(*cov_path), "r") as f:
         final_cov |= set(f.readlines())
     with open("/home/shu/master-research/data/seed_coverage.txt", "r") as f:
